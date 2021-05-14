@@ -58,8 +58,8 @@ steps:
         releaseVersion=$(cd ${REPO_NAME} && git checkout -q ${COMMIT_SHA} && git describe --abbrev=7)
         cp -r ${REPO_NAME}/.git .
 
-        ./mvnw -P -dnastack -B versions:set -DnewVersion=${releaseVersion}
-        ./mvnw -P -dnastack -B clean deploy
+        ./mvnw -P -github -B versions:set -DnewVersion=${releaseVersion}
+        ./mvnw -P -github -B clean deploy
     volumes:
       - name: 'homedir'
         path: /homedir_dotfiles
