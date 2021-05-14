@@ -22,6 +22,34 @@
 		<rest.assured.version>4.3.3</rest.assured.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>dnastack-releases</id>
+			<name>NexusDnastackReleases</name>
+			<url>https://nexus.dnastack.com/content/repositories/releases/</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>dnastack-releases</id>
+			<name>NexusDnastackReleases</name>
+			<url>https://nexus.dnastack.com/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -46,7 +74,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.version}</version>
 		</dependency>
 	</dependencies>
 
