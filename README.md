@@ -1,2 +1,2 @@
 # actuator-e2e-test
-Library for testing /actuator endpoint 
+Java library to test /actuator endpoint 
