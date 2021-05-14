@@ -19,6 +19,8 @@ Where `${actuator-e2e-test.version}` is version of the published library. You ca
 
 ### Add dependency to maven-surefire-plugin configuration
 
+To execute test classes which are not in `testSourceDirectory` dependency needs to be added in `dependenciesToScan` configuration.
+
 ```
 <plugin>
     <artifactId>maven-surefire-plugin</artifactId>
