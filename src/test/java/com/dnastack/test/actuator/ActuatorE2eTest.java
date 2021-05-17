@@ -34,29 +34,26 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class ActuatorE2eTest {
 
-    protected static final String BASE_URI = requiredEnv("E2E_BASE_URI");
-    protected static final String ACTUATOR_INFO_NAME = requiredEnv("E2E_ACTUATOR_INFO_NAME");
-    protected static final Boolean ACCESS_TOKEN_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_ACCESS_TOKEN_AUTH_ENABLED"));
-    protected static final Boolean COOKIE_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_COOKIE_AUTH_ENABLED"));
-    protected static final Boolean REDIRECT_ENABLED = Boolean.parseBoolean(getEnv("E2E_REDIRECT_ENABLED"));
-    protected static final String LOGIN_URL_PATH = optionalEnv("E2E_LOGIN_URL_PATH", "/");
-    protected static final String WALLET_URL = optionalEnv("E2E_WALLET_URL", "http://localhost:8081");
-    protected static final String WALLET_CLIENT_ID = getEnv("E2E_WALLET_CLIENT_ID");
-    protected static final String WALLET_CLIENT_SECRET = optionalEnv("E2E_WALLET_CLIENT_SECRET", "dev-secret-never-use-in-prod");
+    private static ActuatorE2eTestConfig config;
 
-    protected static CookieStore cookies;
-    protected static String accessToken;
+    public ActuatorE2eTest() {
+        config = ActuatorE2eTestConfig.builder().build();
+    }
+
+    public ActuatorE2eTest(ActuatorE2eTestConfig actuatorE2eTestConfig) {
+        config = actuatorE2eTestConfig;
+    }
 
     @BeforeAll
     public static void setup() {
-        RestAssured.baseURI = BASE_URI;
+        RestAssured.baseURI = config.getBaseUri();
 
-        if (COOKIE_AUTH_ENABLED && Objects.isNull(cookies)) {
-            cookies = new BasicCookieStore();
+        if (config.getCookieAuthEnabled() && Objects.isNull(config.getCookies())) {
+            config.setCookies(new BasicCookieStore());
         }
 
-        if (ACCESS_TOKEN_AUTH_ENABLED && Objects.isNull(accessToken)) {
-            accessToken = getBearerToken(BASE_URI);
+        if (config.getAccessTokenAuthEnabled() && Objects.isNull(config.getAccessToken())) {
+            config.setAccessToken(getBearerToken(config.getBaseUri()));
         }
     }
 
@@ -91,7 +88,7 @@ public class ActuatorE2eTest {
 
     @Test
     public void sensitiveInfoShouldBeRedirect() {
-        assumeTrue(REDIRECT_ENABLED);
+        assumeTrue(config.getRedirectEnabled());
         Stream.of(getNotExposedActuatorEndpoints())
             .forEach(endpoint -> {
                 final Response response = given()
@@ -115,12 +112,12 @@ public class ActuatorE2eTest {
 
     @Test
     public void sensitiveInfoShouldNotBeExposedWhenLoggedInByCookie() {
-        assumeTrue(COOKIE_AUTH_ENABLED);
+        assumeTrue(config.getCookieAuthEnabled());
         Stream.of(getNotExposedActuatorEndpoints())
             .forEach(endpoint -> {
                 final Response response = given()
                     .when()
-                    .cookies(toRestAssuredCookies(cookies))
+                    .cookies(toRestAssuredCookies(config.getCookies()))
                     .redirects().follow(false)
                     .get("/actuator/" + endpoint)
                     .then()
@@ -135,12 +132,12 @@ public class ActuatorE2eTest {
 
     @Test
     public void sensitiveInfoShouldNotBeExposedWhenLoggedInByAccessToken() {
-        assumeTrue(ACCESS_TOKEN_AUTH_ENABLED);
+        assumeTrue(config.getAccessTokenAuthEnabled());
         Stream.of(getNotExposedActuatorEndpoints())
             .forEach(endpoint -> {
                 final Response response = given()
                     .when()
-                    .auth().oauth2(accessToken)
+                    .auth().oauth2(config.getAccessToken())
                     .redirects().follow(false)
                     .get("/actuator/" + endpoint)
                     .then()
@@ -156,7 +153,7 @@ public class ActuatorE2eTest {
     protected void assertRedirect(Response response) {
         final String locationHeader = response.header("Location");
         assertThat(locationHeader, notNullValue());
-        assertThat(locationHeader, equalTo(LOGIN_URL_PATH));
+        assertThat(locationHeader, equalTo(config.getLoginUrlPath()));
     }
 
     protected static List<String> getNotExposedActuatorEndpoints() {
@@ -181,7 +178,7 @@ public class ActuatorE2eTest {
     }
 
     protected void appNameAndVersionShouldBeExposed(String nameKey, String versionKey) {
-        assumeFalse(localDeploymentUrl().matches(BASE_URI), "Service info isn't set on local dev builds");
+        assumeFalse(localDeploymentUrl().matches(config.getBaseUri()), "Service info isn't set on local dev builds");
 
         given()
             .log().method()
@@ -191,11 +188,11 @@ public class ActuatorE2eTest {
             .then()
             .log().ifValidationFails()
             .statusCode(200)
-            .body(nameKey, equalTo(ACTUATOR_INFO_NAME))
+            .body(nameKey, equalTo(config.getActuatorInfoName()))
             .body(versionKey, notNullValue());
     }
 
-    protected static String requiredEnv(String name) {
+    public static String requiredEnv(String name) {
         String val = System.getenv(name);
         if (val == null) {
             fail("Environnment variable `" + name + "` is required");
@@ -203,7 +200,7 @@ public class ActuatorE2eTest {
         return val;
     }
 
-    protected static String optionalEnv(String name, String defaultValue) {
+    public static String optionalEnv(String name, String defaultValue) {
         String val = System.getenv(name);
         if (val == null) {
             return defaultValue;
@@ -211,7 +208,7 @@ public class ActuatorE2eTest {
         return val;
     }
 
-    protected static String getEnv(String name) {
+    public static String getEnv(String name) {
         return System.getenv(name);
     }
 
@@ -241,17 +238,17 @@ public class ActuatorE2eTest {
 
     protected static String getBearerToken(String requiredResource) {
         Objects.requireNonNull(requiredResource);
-        Objects.requireNonNull(WALLET_URL);
-        Objects.requireNonNull(WALLET_CLIENT_ID);
-        Objects.requireNonNull(WALLET_CLIENT_SECRET);
+        Objects.requireNonNull(config.getWalletUrl());
+        Objects.requireNonNull(config.getWalletClientId());
+        Objects.requireNonNull(config.getWalletClientSecret());
 
         RequestSpecification specification = new RequestSpecBuilder()
-            .setBaseUri(WALLET_URL)
+            .setBaseUri(config.getWalletUrl())
             .build();
 
         RequestSpecification reqSpec = given(specification)
             .log().uri().auth()
-            .basic(WALLET_CLIENT_ID, WALLET_CLIENT_SECRET)
+            .basic(config.getWalletClientId(), config.getWalletClientSecret())
             .formParam("grant_type", "client_credentials");
 
         if (!requiredResource.isBlank()) {
