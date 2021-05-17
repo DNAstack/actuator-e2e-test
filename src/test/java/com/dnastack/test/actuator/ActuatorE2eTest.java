@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -51,8 +50,14 @@ public class ActuatorE2eTest {
 
     @Test
     public void healthShouldBeExposed() {
-        get("/actuator/health")
-            .then()
+        given()
+            .log().method()
+            .log().uri()
+        .when()
+            .get("/actuator/health")
+        .then()
+            .log().ifValidationFails()
+            .statusCode(200)
             .body("status", equalTo("UP"));
     }
 

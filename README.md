@@ -28,7 +28,7 @@ To use this library in your app include following dependency in your `pom.xml`.
 </dependency>
 ```
 
-Where `${actuator-e2e-test.version}` is version of the published library. You can find available versions at [nexus.dnastack.com](https://nexus.dnastack.com/content/repositories/releases/com/dnastack/actuator-e2e-test/).
+Where `${actuator-e2e-test.version}` is version of the published library. You can find available versions at [github](https://github.com/DNAstack/dnastack-packages/packages/790648).
 
 ### Add dependency to maven-surefire-plugin configuration
 
