@@ -37,13 +37,18 @@ public class ActuatorE2eTest {
 
     protected static ActuatorE2eTestConfig config;
 
+    public ActuatorE2eTest() {
+        config = configure();
+    }
+
+    protected ActuatorE2eTestConfig configure() {
+        return ActuatorE2eTestConfig.builder().build();
+    }
+
     @BeforeAll
     public static void setup() {
-        if (Objects.isNull(config)) {
-            config = ActuatorE2eTestConfig.builder().build();
-        }
-        assertNotNull(config.getBaseUri());
-        assertNotNull(config.getActuatorInfoName());
+        assertNotNull(config.getBaseUri(), "E2E_BASE_URI can't be null");
+        assertNotNull(config.getActuatorInfoName(), "E2E_ACTUATOR_INFO_NAME can't be null");
 
         RestAssured.baseURI = config.getBaseUri();
 
@@ -176,7 +181,7 @@ public class ActuatorE2eTest {
             "threaddump");
     }
 
-    protected void appNameAndVersionShouldBeExposed(String nameKey, String versionKey) {
+    protected static void appNameAndVersionShouldBeExposed(String nameKey, String versionKey) {
         assumeFalse(localDeploymentUrl().matches(config.getBaseUri()), "Service info isn't set on local dev builds");
 
         given()
