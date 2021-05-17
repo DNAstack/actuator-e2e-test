@@ -15,7 +15,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,7 +79,7 @@ public class ActuatorE2eTest {
 
     @Test
     public void sensitiveInfoShouldNotBeExposed() {
-        Stream.of(getNotExposedActuatorEndpoints())
+        getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 given()
                     .log().method()
@@ -96,7 +95,7 @@ public class ActuatorE2eTest {
     @Test
     public void sensitiveInfoShouldBeRedirect() {
         assumeTrue(REDIRECT_ENABLED);
-        Stream.of(getNotExposedActuatorEndpoints())
+        getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 final Response response = given()
                     .when()
@@ -131,7 +130,7 @@ public class ActuatorE2eTest {
     }
 
     protected void sensitiveInfoShouldNotBeExposedWhenLoggedInByCookie(CookieStore cookies) {
-        Stream.of(getNotExposedActuatorEndpoints())
+        getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 final Response response = given()
                     .when()
@@ -156,7 +155,7 @@ public class ActuatorE2eTest {
     }
 
     protected void sensitiveInfoShouldNotBeExposedWhenLoggedInByAccessToken(String accessToken) {
-        Stream.of(getNotExposedActuatorEndpoints())
+        getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 final Response response = given()
                     .when()
@@ -173,8 +172,8 @@ public class ActuatorE2eTest {
             });
     }
 
-    protected static List<String> getNotExposedActuatorEndpoints() {
-        return List.of(
+    protected static Stream<String> getNotExposedActuatorEndpoints() {
+        return Stream.of(
             "auditevents",
             "beans",
             "conditions",
