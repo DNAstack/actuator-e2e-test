@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -41,6 +42,8 @@ public class ActuatorE2eTest {
         if (Objects.isNull(config)) {
             config = ActuatorE2eTestConfig.builder().build();
         }
+        assertNotNull(config.getBaseUri());
+        assertNotNull(config.getActuatorInfoName());
 
         RestAssured.baseURI = config.getBaseUri();
 

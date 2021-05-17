@@ -11,9 +11,9 @@ import static com.dnastack.test.actuator.ActuatorE2eTest.*;
 public class ActuatorE2eTestConfig {
 
     @Builder.Default
-    private String baseUri = requiredEnv("E2E_BASE_URI");
+    private String baseUri = getEnv("E2E_BASE_URI");
     @Builder.Default
-    private String actuatorInfoName = requiredEnv("E2E_ACTUATOR_INFO_NAME");
+    private String actuatorInfoName = getEnv("E2E_ACTUATOR_INFO_NAME");
     @Builder.Default
     private Boolean accessTokenAuthEnabled = Boolean.parseBoolean(getEnv("E2E_ACCESS_TOKEN_AUTH_ENABLED"));
     @Builder.Default
