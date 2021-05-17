@@ -34,18 +34,14 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class ActuatorE2eTest {
 
-    private static ActuatorE2eTestConfig config;
-
-    public ActuatorE2eTest() {
-        config = ActuatorE2eTestConfig.builder().build();
-    }
-
-    public ActuatorE2eTest(ActuatorE2eTestConfig actuatorE2eTestConfig) {
-        config = actuatorE2eTestConfig;
-    }
+    protected static ActuatorE2eTestConfig config;
 
     @BeforeAll
     public static void setup() {
+        if (Objects.isNull(config)) {
+            config = ActuatorE2eTestConfig.builder().build();
+        }
+
         RestAssured.baseURI = config.getBaseUri();
 
         if (config.getCookieAuthEnabled() && Objects.isNull(config.getCookies())) {
