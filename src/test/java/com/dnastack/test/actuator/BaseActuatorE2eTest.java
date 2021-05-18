@@ -14,6 +14,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,7 +32,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class ActuatorE2eTest {
+@DisabledIfEnvironmentVariable(named = "E2E_BASE_ACTUATOR_TEST_DISABLED", matches = "true")
+public class BaseActuatorE2eTest {
 
     protected static final String BASE_URI = requiredEnv("E2E_BASE_URI");
     protected static final String ACTUATOR_INFO_NAME = getEnv("E2E_ACTUATOR_INFO_NAME");
@@ -271,8 +273,8 @@ public class ActuatorE2eTest {
             .basic(WALLET_CLIENT_ID, WALLET_CLIENT_SECRET)
             .formParam("grant_type", "client_credentials");
 
-        if (!ActuatorE2eTest.BASE_URI.isBlank()) {
-            reqSpec.formParam("resource", ActuatorE2eTest.BASE_URI);
+        if (!BaseActuatorE2eTest.BASE_URI.isBlank()) {
+            reqSpec.formParam("resource", BaseActuatorE2eTest.BASE_URI);
         }
 
         JsonPath tokenResponse = reqSpec
