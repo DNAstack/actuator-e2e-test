@@ -3,7 +3,7 @@ Java library to test /actuator endpoint.
 
 ## How to use?
 To use this library include `actuator-e2e-test` as dependency and configure it by environmental variables. 
-For further customization extend class `ActuatorE2eTest` and override methods you need to customize.
+For further customization extend class `BaseActuatorE2eTest`, override methods you need to customize and set environment property`E2E_BASE_ACTUATOR_TEST_DISABLED` to `true` otherwise tests will be executed from both sub-class and base-class.
 
 ### Add DNAstack Github repository to pom.xml
 
