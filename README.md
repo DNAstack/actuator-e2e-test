@@ -36,6 +36,21 @@ Where `${actuator-e2e-test.version}` is version of the published library. You ca
 
 Make sure that that maven settings.xml are copied to docker image.
 
+#### build-docker-e2e-image
+
+```
+# Allows us to pass settings.xml configured on local machine or CI server to access private repo
+mkdir -p ${docker_context_dir}/.m2
+cp ~/.m2/*.xml ${docker_context_dir}/.m2
+```
+
+#### Dockerfile
+
+```
+# Allows us to pass settings.xml configured on local machine or CI server to access private repo
+ADD target/.m2 /root/.m2
+```
+
 ## Configuration
 
 Configuration is done by set of environmental variables
