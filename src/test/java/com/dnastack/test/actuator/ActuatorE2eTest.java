@@ -35,10 +35,10 @@ public class ActuatorE2eTest {
 
     protected static final String BASE_URI = requiredEnv("E2E_BASE_URI");
     protected static final String ACTUATOR_INFO_NAME = getEnv("E2E_ACTUATOR_INFO_NAME");
-    protected static final Boolean ACCESS_TOKEN_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_ACCESS_TOKEN_AUTH_ENABLED"));
-    protected static final Boolean COOKIE_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_COOKIE_AUTH_ENABLED"));
-    protected static final Boolean REDIRECT_ENABLED = Boolean.parseBoolean(getEnv("E2E_REDIRECT_ENABLED"));
+    protected static final Boolean LOGIN_REDIRECT_ENABLED = Boolean.parseBoolean(getEnv("E2E_LOGIN_REDIRECT_ENABLED"));
     protected static final String LOGIN_URL_PATH = optionalEnv("E2E_LOGIN_URL_PATH", "/");
+    protected static final Boolean COOKIE_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_COOKIE_AUTH_ENABLED"));
+    protected static final Boolean ACCESS_TOKEN_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_ACCESS_TOKEN_AUTH_ENABLED"));
     protected static final String WALLET_TOKEN_URI = optionalEnv("E2E_WALLET_TOKEN_URI", "http://localhost:8081/oauth/token");
     protected static final String WALLET_CLIENT_ID = getEnv("E2E_WALLET_CLIENT_ID");
     protected static final String WALLET_CLIENT_SECRET = optionalEnv("E2E_WALLET_CLIENT_SECRET", "dev-secret-never-use-in-prod");
@@ -93,6 +93,7 @@ public class ActuatorE2eTest {
 
     @Test
     public void sensitiveInfoShouldNotBeExposed() {
+        assumeFalse(LOGIN_REDIRECT_ENABLED);
         getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 given()
@@ -108,7 +109,7 @@ public class ActuatorE2eTest {
 
     @Test
     public void sensitiveInfoShouldBeRedirect() {
-        assumeTrue(REDIRECT_ENABLED);
+        assumeTrue(LOGIN_REDIRECT_ENABLED);
         getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 final Response response = given()
@@ -139,7 +140,7 @@ public class ActuatorE2eTest {
     @Test
     public void sensitiveInfoShouldNotBeExposedWhenLoggedInByCookie() {
         assumeTrue(COOKIE_AUTH_ENABLED);
-        CookieStore cookies = new BasicCookieStore();
+        CookieStore cookies = getCookie();
         sensitiveInfoShouldNotBeExposedWhenLoggedInByCookie(cookies);
     }
 
@@ -164,7 +165,7 @@ public class ActuatorE2eTest {
     @Test
     public void sensitiveInfoShouldNotBeExposedWhenLoggedInByAccessToken() {
         assumeTrue(ACCESS_TOKEN_AUTH_ENABLED);
-        String accessToken = getBearerToken(BASE_URI);
+        String accessToken = getAccessToken();
         sensitiveInfoShouldNotBeExposedWhenLoggedInByAccessToken(accessToken);
     }
 
@@ -251,8 +252,12 @@ public class ActuatorE2eTest {
         );
     }
 
-    protected String getBearerToken(String requiredResource) {
-        Objects.requireNonNull(requiredResource);
+    protected BasicCookieStore getCookie() {
+        return new BasicCookieStore();
+    }
+
+    protected String getAccessToken() {
+        Objects.requireNonNull(BASE_URI);
         Objects.requireNonNull(WALLET_TOKEN_URI);
         Objects.requireNonNull(WALLET_CLIENT_ID);
         Objects.requireNonNull(WALLET_CLIENT_SECRET);
@@ -266,8 +271,8 @@ public class ActuatorE2eTest {
             .basic(WALLET_CLIENT_ID, WALLET_CLIENT_SECRET)
             .formParam("grant_type", "client_credentials");
 
-        if (!requiredResource.isBlank()) {
-            reqSpec.formParam("resource", requiredResource);
+        if (!ActuatorE2eTest.BASE_URI.isBlank()) {
+            reqSpec.formParam("resource", ActuatorE2eTest.BASE_URI);
         }
 
         JsonPath tokenResponse = reqSpec
