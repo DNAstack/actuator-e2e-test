@@ -191,10 +191,13 @@ public class BaseActuatorE2eTest {
 
     protected static Stream<String> getNotExposedActuatorEndpoints() {
         return Stream.of(
+            "actuator",
             "auditevents",
+            "autoconfig",
             "beans",
             "conditions",
             "configprops",
+            "dump",
             "env",
             "flyway",
             "httptrace",
@@ -207,7 +210,8 @@ public class BaseActuatorE2eTest {
             "scheduledtasks",
             "sessions",
             "shutdown",
-            "threaddump");
+            "threaddump",
+            "trace");
     }
 
     public static String requiredEnv(String name) {
