@@ -35,7 +35,7 @@
 		<repository>
 			<id>github</id>
 			<name>GitHub OWNER Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/DNAstack/dnastack-packages</url>
+			<url>https://maven.pkg.github.com/DNAstack/dnastack-public-packages</url>
 		</repository>
 	</distributionManagement>
 
