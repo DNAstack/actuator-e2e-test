@@ -39,13 +39,6 @@
 		<rest.assured.version>4.4.0</rest.assured.version>
 	</properties>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -125,10 +118,27 @@
 		</plugins>
 	</build>
 
-	<!-- Maven Central Release Profile -->
 	<profiles>
+		<!-- DNAstack Internal Release Profile -->
+		<profile>
+			<id>github</id>
+			<distributionManagement>
+				<repository>
+					<id>github</id>
+					<name>GitHub OWNER Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/DNAstack/dnastack-packages</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+		<!-- Maven Central Release Profile -->
 		<profile>
 			<id>release</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+			</distributionManagement>
 			<build>
 				<plugins>
 					<plugin>
