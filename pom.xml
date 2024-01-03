@@ -4,7 +4,7 @@
 
 	<groupId>com.dnastack</groupId>
 	<artifactId>actuator-e2e-test</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>A library to customizably test the security and response configurations of a Spring Boot application's /actuator endpoints.</description>
 	<url>https://www.github.com/DNAstack/actuator-e2e-test</url>
@@ -26,17 +26,21 @@
 	</developers>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
 		<maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-		<build-helper-maven-plugin>3.2.0</build-helper-maven-plugin>
-		<maven-surefire-plugin>3.0.0-M5</maven-surefire-plugin>
-		<lombok.version>1.18.20</lombok.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<junit.version>5.7.1</junit.version>
-		<rest.assured.version>4.4.0</rest.assured.version>
+		<maven.build-helper.plugin>3.2.0</maven.build-helper.plugin>
+		<maven.surefire.plugin>3.0.0-M5</maven.surefire.plugin>
+		<maven.gpg-plugin.version>1.5</maven.gpg-plugin.version>
+		<!-- Sonar -->
+		<sonar.nexus-staging.plugin.version>1.6.13</sonar.nexus-staging.plugin.version>
+		<!-- Other -->
+		<lombok.version>1.18.30</lombok.version>
+		<slf4j.version>2.0.10</slf4j.version>
+		<junit.version>5.10.1</junit.version>
+		<restassured.version>5.3.0</restassured.version>
 	</properties>
 
 	<dependencyManagement>
@@ -45,6 +49,13 @@
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
 				<version>${junit.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured-bom</artifactId>
+				<version>${restassured.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -70,7 +81,7 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
-			<version>${rest.assured.version}</version>
+			<version>${restassured.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -91,7 +102,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>${build-helper-maven-plugin}</version>
+				<version>${maven.build-helper.plugin}</version>
 				<executions>
 					<execution>
 						<id>add-source</id>
@@ -110,7 +121,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
+				<version>${maven.surefire.plugin}</version>
 				<configuration>
 					<skipTests>true</skipTests>
 				</configuration>
@@ -171,7 +182,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
+						<version>${maven.gpg-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -185,7 +196,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
+						<version>${sonar.nexus-staging.plugin.version}</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
