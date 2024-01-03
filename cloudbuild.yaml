@@ -40,7 +40,7 @@ steps:
         path: /root
 
   - id: build_and_publish
-    name: 'openjdk:11-jdk-slim'
+    name: 'openjdk:17-jdk-slim'
     entrypoint: 'bash'
     args:
       - '-e'
@@ -55,6 +55,7 @@ steps:
         # Need libatomic1 for protoc.
         apt update && apt install -y git libatomic1
 
+        git config --global --add safe.directory /workspace
         releaseVersion=$(cd ${REPO_NAME} && git checkout -q ${COMMIT_SHA} && git describe --abbrev=7)
         cp -r ${REPO_NAME}/.git .
 
