@@ -93,7 +93,7 @@ This library is published to Maven Central. The deployment process is automated 
 
 ### Build Pipeline
 
-Commits trigger builds in the [libraries-build pipeline](https://concourse.tools.dnastack.com/teams/dev/pipelines/libraries-build).
+Commits trigger builds in the libraries-build pipeline.
 
 ### Release Process
 
