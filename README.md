@@ -86,3 +86,35 @@ E2E_WALLET_TOKEN_URI
 E2E_WALLET_CLIENT_ID
 E2E_WALLET_CLIENT_SECRET
 ```
+
+## Deployment Process
+
+This library is published to Maven Central. The deployment process is automated using Concourse CI.
+
+### Build Pipeline
+
+Commits trigger builds in the libraries-build pipeline.
+
+### Release Process
+
+1. **Create a SNAPSHOT tag**: Create an annotated tag on the main branch for the next release with the SNAPSHOT postfix (e.g., `1.2.1-SNAPSHOT`)
+   ```bash
+   git tag -a 1.2.1-SNAPSHOT -m "Start development of version 1.2.1"
+   git push origin 1.2.1-SNAPSHOT
+   ```
+
+2. **Development**: Branch, commit, push, and create pull requests as usual
+
+3. **Release**: When the current snapshot is ready to become a release, create the release tag (e.g., `1.2.1`)
+   ```bash
+   git tag -a 1.2.1 -m "Release version 1.2.1"
+   git push origin 1.2.1
+   ```
+
+4. **Next development cycle**: Once the release build completes and the new release is available on Maven Central, tag the current commit with the next release version's SNAPSHOT
+   ```bash
+   git tag -a 1.2.2-SNAPSHOT -m "Start development of version 1.2.2"
+   git push origin 1.2.2-SNAPSHOT
+   ```
+
+**Note**: Tags must match the regex `^[0-9]+\.[0-9]+\.[0-9]+$` to trigger a release build.
