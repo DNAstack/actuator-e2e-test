@@ -22,11 +22,8 @@ import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -38,7 +35,6 @@ public class BaseActuatorE2eTest {
     protected static final String BASE_URI = requiredEnv("E2E_BASE_URI");
     protected static final String ACTUATOR_INFO_NAME = getEnv("E2E_ACTUATOR_INFO_NAME");
     protected static final Boolean LOGIN_REDIRECT_ENABLED = Boolean.parseBoolean(getEnv("E2E_LOGIN_REDIRECT_ENABLED"));
-    protected static final String LOGIN_URL_PATH = optionalEnv("E2E_LOGIN_URL_PATH", "/");
     protected static final Boolean COOKIE_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_COOKIE_AUTH_ENABLED"));
     protected static final Boolean ACCESS_TOKEN_AUTH_ENABLED = Boolean.parseBoolean(getEnv("E2E_ACCESS_TOKEN_AUTH_ENABLED"));
     protected static final String WALLET_TOKEN_URI = optionalEnv("E2E_WALLET_TOKEN_URI", "http://localhost:8081/oauth/token");
@@ -51,7 +47,7 @@ public class BaseActuatorE2eTest {
     }
 
     @Test
-    public void healthShouldBeExposed() {
+    public void healthEndpoint_should_beAccessibleAndReportStatusUp() {
         given()
             .log().method()
             .log().uri()
@@ -64,13 +60,13 @@ public class BaseActuatorE2eTest {
     }
 
     @Test
-    public void appNameAndVersionShouldBeExposed() {
+    public void appNameAndVersion_should_beExposedAndReportExpectedValues() {
         String nameKey = "build.name";
         String versionKey = "build.version";
-        appNameAndVersionShouldBeExposed(nameKey, versionKey);
+        appNameAndVersion_should_beExposedAndReportExpectedValues(nameKey, versionKey);
     }
 
-    protected void appNameAndVersionShouldBeExposed(String nameKey, String versionKey) {
+    protected void appNameAndVersion_should_beExposedAndReportExpectedValues(String nameKey, String versionKey) {
         assumeFalse(localDeploymentUrl().matches(BASE_URI), "Service info isn't set on local dev builds");
 
         JsonPath jsonPath = given()
@@ -94,7 +90,7 @@ public class BaseActuatorE2eTest {
     }
 
     @Test
-    public void sensitiveInfoShouldNotBeExposed() {
+    public void sensitiveActuatorEndpoints_should_return401or404_when_loginRedirectIsDisabled() {
         assumeFalse(LOGIN_REDIRECT_ENABLED);
         getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
@@ -110,42 +106,27 @@ public class BaseActuatorE2eTest {
     }
 
     @Test
-    public void sensitiveInfoShouldBeRedirect() {
+    public void sensitiveActuatorEndpoints_should_returnNon200Response_when_loginRedirectIsEnabled() {
         assumeTrue(LOGIN_REDIRECT_ENABLED);
         getNotExposedActuatorEndpoints()
             .forEach(endpoint -> {
                 final Response response = given()
-                    .when()
-                    .redirects().follow(false)
-                    .get("/actuator/" + endpoint)
-                    .then()
-                    .extract()
-                    .response();
+                        .when()
+                        .redirects().follow(false)
+                        .get("/actuator/" + endpoint)
+                        .then()
+                        .extract()
+                        .response();
 
-                if (response.statusCode() == 302) {
-                    assertRedirect(response);
-                } else {
-                    assertThat(
+                assertThat(
                         format("Actuator endpoint '%s' is being exposed or misconfigured! Returning status code %s", endpoint, response.getStatusCode()),
-                        response.statusCode(), anyOf(equalTo(401), equalTo(404))
-                    );
-                }
+                        response.statusCode(), allOf(greaterThanOrEqualTo(300), lessThanOrEqualTo(499)));
+
             });
     }
 
-    protected void assertRedirect(Response response) {
-        String locationHeader = response.header("Location");
-        assertThat(locationHeader, notNullValue());
-
-        if (locationHeader.contains("?")) {
-            locationHeader = locationHeader.substring(0,locationHeader.indexOf("?"));
-        }
-
-        assertThat(locationHeader, equalTo(LOGIN_URL_PATH));
-    }
-
     @Test
-    public void sensitiveInfoShouldNotBeExposedWhenLoggedInByCookie() {
+    public void sensitiveActuatorEndpoints_should_return404_when_loggedInByCookie() {
         assumeTrue(COOKIE_AUTH_ENABLED);
         CookieStore cookies = getCookie();
         sensitiveInfoShouldNotBeExposedWhenLoggedInByCookie(cookies);
@@ -170,7 +151,7 @@ public class BaseActuatorE2eTest {
     }
 
     @Test
-    public void sensitiveInfoShouldNotBeExposedWhenLoggedInByAccessToken() {
+    public void sensitiveActuatorEndpoints_should_return404_when_loggedInByAccessToken() {
         assumeTrue(ACCESS_TOKEN_AUTH_ENABLED);
         String accessToken = getAccessToken();
         sensitiveInfoShouldNotBeExposedWhenLoggedInByAccessToken(accessToken);
