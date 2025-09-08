@@ -134,8 +134,13 @@ public class BaseActuatorE2eTest {
     }
 
     protected void assertRedirect(Response response) {
-        final String locationHeader = response.header("Location");
+        String locationHeader = response.header("Location");
         assertThat(locationHeader, notNullValue());
+
+        if (locationHeader.contains("?")) {
+            locationHeader = locationHeader.substring(0,locationHeader.indexOf("?"));
+        }
+
         assertThat(locationHeader, equalTo(LOGIN_URL_PATH));
     }
 
