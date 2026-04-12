@@ -1,0 +1,41 @@
+name: Build, Test & Analyse
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test-java-app:
+    name: Build & Test Java App
+    uses: DNAstack/dnastack-development-tools/.github/workflows/build-test-java-app.yml@d01a9e8068e2bc4b92536ea6d8f536b48dcd1699
+    with:
+      java-version: 17
+    secrets:
+      pat-with-read-packages-permission: ${{ secrets.AUTH_TOKEN }}
+
+  sast:
+    name: SAST (SonarQube)
+    uses: DNAstack/dnastack-development-tools/.github/workflows/sast.yml@d01a9e8068e2bc4b92536ea6d8f536b48dcd1699
+    with:
+      with-frontend: false
+      java-version: 17
+    secrets:
+      pat-with-read-packages-permission: ${{ secrets.AUTH_TOKEN }}
+      sonar-token: ${{ secrets.SONAR_TOKEN }}
+      sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+
+  sca:
+    name: SCA (Trivy)
+    uses: DNAstack/dnastack-development-tools/.github/workflows/sca.yml@d01a9e8068e2bc4b92536ea6d8f536b48dcd1699
+    with:
+      java-version: 17
+    secrets:
+      pat-with-read-packages-permission: ${{ secrets.AUTH_TOKEN }}
+
+  secrets-detection:
+    name: Secrets Detection (Gitleaks)
+    uses: DNAstack/dnastack-development-tools/.github/workflows/secrets-detection.yml@d01a9e8068e2bc4b92536ea6d8f536b48dcd1699
+    secrets:
+      gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}
