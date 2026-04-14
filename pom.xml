@@ -35,7 +35,7 @@
 		<maven.surefire.plugin>3.0.0-M5</maven.surefire.plugin>
 		<maven.gpg-plugin.version>1.5</maven.gpg-plugin.version>
 		<!-- Sonar -->
-		<sonar.nexus-staging.plugin.version>1.6.13</sonar.nexus-staging.plugin.version>
+		<sonar.nexus-staging.plugin.version>1.7.0</sonar.nexus-staging.plugin.version>
 		<!-- Other -->
 		<lombok.version>1.18.30</lombok.version>
 		<slf4j.version>2.0.10</slf4j.version>
