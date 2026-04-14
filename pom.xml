@@ -31,7 +31,7 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
 		<maven.source.plugin.version>3.2.0</maven.source.plugin.version>
-		<maven.build-helper.plugin>3.2.0</maven.build-helper.plugin>
+		<maven.build-helper.plugin>3.6.1</maven.build-helper.plugin>
 		<maven.surefire.plugin>3.0.0-M5</maven.surefire.plugin>
 		<maven.gpg-plugin.version>1.5</maven.gpg-plugin.version>
 		<!-- Sonar -->
