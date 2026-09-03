@@ -1,6 +1,6 @@
 steps:
   - id: setup
-    name: 'gcr.io/cloud-builders/gcloud'
+    name: 'gcr.io/cloud-builders/gcloud@sha256:1cce17069c5129f140870e2806a6cfad4dceb7217c84d3844ead7d1d8947b77d'
     entrypoint: 'bash'
     args:
       - '-e'
@@ -31,7 +31,7 @@ steps:
         path: /root
 
   - id: get_full_history
-    name: 'gcr.io/cloud-builders/git'
+    name: 'gcr.io/cloud-builders/git@sha256:e22d5e335eb04484c86f5255006c5331d26c1372cb609cb0d8d13b564d4addea'
     args:
       - clone
       - ${_SOURCE_SSH_URL}/${REPO_NAME}
